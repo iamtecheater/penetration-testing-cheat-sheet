@@ -76,6 +76,7 @@ My other cheat sheets:
 * [DirBuster](#dirbuster)
 * [feroxbuster](#feroxbuster)
 * [Bypassing 401 and 403](#bypassing-401-and-403)
+* [git-dumper](#git-dumper)
 * [urlhunter](#urlhunter)
 * [Parsero](#parsero)
 * [WhatWeb](#whatweb)
@@ -582,7 +583,7 @@ Check the list of `/.well-known/` files [here](https://www.iana.org/assignments/
 
 Google Dorks will not show directories nor files that are disallowed in `robots.txt`, to check for such directories and files use [httpx](#httpx).
 
-Append `site:somedomain.com` to limit your scope to a specified domain or `site:*.somedomain.com` to limit your scope only to subdomains.
+Append `site:www.somedomain.com` to limit your scope to a specified domain/subdomain or `site:*.somedomain.com` to limit your scope to all subdomains. Append `site:*.somedomain.com -www` to exclude `www` subdomain from results.
 
 Simple Google Dorks examples:
 
@@ -679,6 +680,28 @@ grep -Po '(?<=403)\K.+\K(?<=c\ )[^\s]+' feroxbuster_results.txt | sort -uf | tee
 ### Bypassing 401 and 403
 
 Find out how to bypass 4xx HTTP response status codes from my other [project](https://github.com/ivan-sincek/forbidden).
+
+### git-dumper
+
+Try to reconstruct a GitHub repository (i.e. get the source code) based on the commit history from a public `/.git` directory:
+
+```fundamental
+git-dumper https://somesite.com/.git git_dumper_results
+```
+
+This tool might not be able to reconstruct the whole repository all the time, but it could still reveal some sensitive information.
+
+Some additional `git` commands to try on the cloned `/.git` directory:
+
+```fundamental
+git status
+
+git log
+
+git checkout -- .
+
+git restore .
+```
 
 ### urlhunter
 
