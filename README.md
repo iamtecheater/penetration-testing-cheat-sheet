@@ -49,8 +49,11 @@ My other cheat sheets:
 
 ## Table of Contents
 
-**0. [Install Tools](#0-install-tools)**
+**0. [Install Tools and Setup](#0-install-tools-and-setup)**
 
+* [API Keys](#api-keys)
+* [User-Agents](#user-agents)
+* [DNS Resolvers](#dns-resolvers)
 * [ProxyChains-NG](#proxychains-ng)
 
 **1. [Reconnaissance](#1-reconnaissance)**
@@ -62,6 +65,7 @@ My other cheat sheets:
 * [FOCA](#foca-fingerprinting-organizations-with-collected-archives)
 * [assetfinder](#assetfinder)
 * [Sublist3r](#sublist3r)
+* [Subfinder](#subfinder)
 * [Amass](#amass)
 * [dig](#dig)
 * [Fierce](#fierce)
@@ -137,7 +141,7 @@ My other cheat sheets:
 * [ngrok](#ngrok)
 * [Additional References](#additional-references)
 
-## 0. Install Tools
+## 0. Install Tools and Setup
 
 Most of the tools can be installed with Linux package manager:
 
@@ -181,6 +185,32 @@ Some tools that are in the form of binaries or shell scripts can be moved to `/u
 
 ```bash
 mv sometool.sh /usr/bin/sometool && chmod +x /usr/bin/sometool
+```
+
+### API Keys
+
+List of useful APIs to integrate in your tools:
+
+* [scrapeops.io](https://scrapeops.io) (User-Agents)
+* [shodan.io](https://developer.shodan.io) (IoT search engine)
+* [censys.io](https://search.censys.io/api) (domain lookup)
+* [github.com](https://github.com/settings/tokens) (public source code repository lookup)
+* [virustotal.com](https://developers.virustotal.com/reference/overview) (malware database lookup)
+
+### User-Agents
+
+Download bot-safe User-Agents:
+
+```python
+python3 -c 'import json, requests; open("./user_agents.txt", "w").write(("\n").join(requests.get("http://headers.scrapeops.io/v1/user-agents?api_key=SCRAPEOPS_API_KEY&num_results=100", verify = False).json()["result"]))'
+```
+
+### DNS Resolvers
+
+Download trusted DNS resolvers (or manually from [github.com/trickest/resolvers](https://github.com/trickest/resolvers)):
+
+```python
+python3 -c 'import json, requests; open("./resolvers.txt", "w").write(requests.get("https://raw.githubusercontent.com/trickest/resolvers/main/resolvers-trusted.txt", verify = False).text)'
 ```
 
 ### ProxyChains-NG
@@ -246,12 +276,12 @@ Inspect the web console for possible errors. Inspect the application's source co
 * [sitereport.netcraft.com](https://sitereport.netcraft.com)
 * [searchdns.netcraft.com](https://searchdns.netcraft.com) (web-based DNS lookup)
 * [spyse.com](https://spyse.com)
-* [search.censys.io](https://search.censys.io)
+* [search.censys.io](https://search.censys.io) (domain lookup)
 * [crt.sh](https://crt.sh) (certificate fingerprinting)
 * [commoncrawl.org](https://commoncrawl.org/the-data/get-started) (web crawl dumps)
 * [opendata.rapid7.com](https://opendata.rapid7.com) (scan dumps)
 * [searchcode.com](https://searchcode.com)
-* [virustotal.com](https://www.virustotal.com/gui/home/search)
+* [virustotal.com](https://www.virustotal.com/gui/home/search) (malware database lookup)
 * [isithacked.com](http://isithacked.com)
 * [threatcrowd.org](https://www.threatcrowd.org)
 * [haveibeenpwned.com](https://haveibeenpwned.com)
@@ -298,8 +328,6 @@ To download and install the tool, run:
 ```bash
 go install -v github.com/projectdiscovery/uncover/cmd/uncover@latest
 ```
-
-Register and get your free API keys on [Shodan](https://www.shodan.io) and [Censys](https://search.censys.io/api).
 
 Set your API keys in `/root/.config/uncover/provider-config.yaml` as following:
 
@@ -352,12 +380,33 @@ Enumerate subdomains using OSINT:
 sublist3r -o sublister_results.txt -d somedomain.com
 ```
 
+### Subfinder
+
+Enumerate subdomains using OSINT:
+
+```fundamental
+subfinder -silent -timeout 5 -nW -r resolvers.txt -d somedomain.com | tee subfinder_results.txt
+```
+
+Set your API keys in `/root/.config/subfinder/config.yaml` as following:
+
+```fundamental
+shodan:
+  - SHODAN_API_KEY
+censys:
+  - CENSYS_API_ID:CENSYS_API_SECRET
+github:
+  - GITHUB_API_KEY
+virustotal:
+  - VIRUSTOTAL_API_KEY
+```
+
 ### Amass
 
 Gather information:
 
 ```fundamental
-amass enum -passive -o amass_results.txt -d somedomain.com
+amass enum -passive -o amass_results.txt -trf resolvers.txt -d somedomain.com
 ```
 
 ### dig
