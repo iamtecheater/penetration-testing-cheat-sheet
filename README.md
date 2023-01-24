@@ -196,7 +196,7 @@ List of useful APIs to integrate in your tools:
 
 ### User-Agents
 
-Download bot-safe User-Agents:
+Download list of bot-safe User-Agents (requires [scrapeops.io](https://scrapeops.io) API key):
 
 ```python
 python3 -c 'import json, requests; open("./user_agents.txt", "w").write(("\n").join(requests.get("http://headers.scrapeops.io/v1/user-agents?api_key=SCRAPEOPS_API_KEY&num_results=100", verify = False).json()["result"]))'
@@ -204,7 +204,7 @@ python3 -c 'import json, requests; open("./user_agents.txt", "w").write(("\n").j
 
 ### DNS Resolvers
 
-Download trusted DNS resolvers (or manually from [github.com/trickest/resolvers](https://github.com/trickest/resolvers)):
+Download list of trusted DNS resolvers (or manually from [github.com/trickest/resolvers](https://github.com/trickest/resolvers)):
 
 ```python
 python3 -c 'import json, requests; open("./resolvers.txt", "w").write(requests.get("https://raw.githubusercontent.com/trickest/resolvers/main/resolvers-trusted.txt", verify = False).text)'
